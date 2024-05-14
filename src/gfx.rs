@@ -1,7 +1,5 @@
 use crate::ron_helpers::{parse, trim_extension};
 use bevy::{prelude::*, render::camera::ScalingMode::WindowSize, window::PrimaryWindow};
-use regex::Regex;
-use ron::de::from_reader;
 use std::collections::HashMap;
 
 /// Important: this is the sprite size before window scaling is applied
