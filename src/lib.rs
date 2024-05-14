@@ -5,5 +5,5 @@ mod ron_helpers;
 
 #[wasm_bindgen(start)]
 pub fn start() {
-    App::new().run()
+    App::new().add_plugins(DefaultPlugins).run()
 }
