@@ -1,4 +1,4 @@
-use crate::ron_config::{parse, trim_extension};
+use crate::ron_helpers::{parse, trim_extension};
 use bevy::{prelude::*, render::camera::ScalingMode::WindowSize, window::PrimaryWindow};
 use regex::Regex;
 use ron::de::from_reader;
