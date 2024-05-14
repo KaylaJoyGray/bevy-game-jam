@@ -61,8 +61,9 @@ pub fn load_sprite_sheets(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let config = parse::<Vec<(String, f32, i32, i32)>>("./assets/graphics/config.ron")
-        .expect("Fatal: could not parse graphics/config.ron");
+    let config =
+        parse::<Vec<(String, f32, i32, i32)>>("./assets/graphics/config.ron")
+            .expect("Fatal: could not parse graphics/config.ron");
 
     let mut sprite_sheet_resource = SpriteSheetResource::new();
 

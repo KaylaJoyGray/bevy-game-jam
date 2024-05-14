@@ -28,7 +28,7 @@ pub fn save<P: AsRef<Path>, T: Debug + Serialize>(
     Ok(file.write_all(serialized.as_bytes())?)
 }
 
-pub fn parse<T: Debug + DeserializeOwned>(path: std::path) -> Result<T, Box<dyn Error>> {
+pub fn parse<T: Debug + DeserializeOwned>(path: &str) -> Result<T, Box<dyn Error>> {
     let f = fs::read(&path)?;
     let parsed: T = from_reader(&f[..])?;
     Ok(parsed)
