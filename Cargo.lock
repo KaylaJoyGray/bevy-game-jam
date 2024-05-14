@@ -304,6 +304,7 @@ dependencies = [
  "regex",
  "ron",
  "serde",
+ "wasm-bindgen",
 ]
 
 [[package]]
