@@ -19,3 +19,6 @@ opt-level = 3
 codegen-units = 1
 incremental = false
 debug = false
+
+[target.wasm32.unknown.unknown]
+runner = "wasm-server-runner"
