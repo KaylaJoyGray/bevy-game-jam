@@ -4,6 +4,8 @@ mod gfx;
 mod ron_helpers;
 mod sound;
 
+// TODO OTD: Sprite animations
+
 #[wasm_bindgen(start)]
 pub fn start() {
     App::new()
