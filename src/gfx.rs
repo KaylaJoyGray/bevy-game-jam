@@ -24,7 +24,7 @@ impl Plugin for GFXPlugin {
 }
 
 /// Important: this is the sprite size before window scaling is applied
-pub const SPRITE_SIZE: f32 = 2.0;
+pub const SPRITE_SIZE: f32 = 1.0;
 
 #[derive(Debug, Clone)]
 pub struct SpriteSheetHandle {
@@ -177,7 +177,7 @@ pub fn spawn_camera(mut commands: Commands) {
             projection: OrthographicProjection {
                 near: -1000.0,
                 far: 1000.0,
-                scaling_mode: WindowSize(8.0), // 8 pixels per game unit
+                scaling_mode: WindowSize(16.0), // 16 pixels per game unit
                 ..default()
             },
             camera: Camera {
