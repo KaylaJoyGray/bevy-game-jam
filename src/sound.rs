@@ -1,14 +1,26 @@
 use crate::ron_helpers::{parse, trim_extension};
 use bevy::{
+    app::{App, Plugin},
     asset::AssetServer,
     audio::{AudioSource, AudioSourceBundle, PlaybackMode, PlaybackSettings},
     log::info,
-    prelude::{
-        default, Commands, Component, Entity, Event, EventReader, Handle, Query, Res, Resource,
-        With,
-    },
+    prelude::*,
 };
 use std::collections::HashMap;
+
+pub struct SoundPlugin {}
+
+impl Plugin for SoundPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, load_sounds).add_systems(
+            Update,
+            (
+                play_sfx.run_if(on_event::<PlaySFX>()),
+                play_music.run_if(on_event::<PlayMusic>()),
+            ),
+        );
+    }
+}
 
 #[derive(Debug, Resource)]
 pub struct SoundResource {
