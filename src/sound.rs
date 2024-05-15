@@ -6,7 +6,8 @@ use bevy::{
     audio::{AudioSource, AudioSourceBundle, PlaybackMode, PlaybackSettings},
     log::info,
     prelude::{
-        Commands, Component, Entity, Event, EventReader, Handle, Query, Res, Resource, With,
+        default, Commands, Component, Entity, Event, EventReader, Handle, Query, Res, Resource,
+        With,
     },
 };
 
