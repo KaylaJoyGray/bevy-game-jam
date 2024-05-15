@@ -1,9 +1,14 @@
-use crate::ron_helpers::{parse, trim_extension};
-use bevy::asset::AssetServer;
-use bevy::audio::{PlaybackMode, PlaybackSettings};
-use bevy::log::info;
-use bevy::prelude::{AudioSource, AudioSourceBundle, Commands, Component, default, Entity, Event, EventReader, Handle, Query, Res, Resource, With};
 use std::collections::HashMap;
+
+use crate::ron_helpers::{parse, trim_extension};
+use bevy::{
+    asset::AssetServer,
+    audio::{AudioSource, AudioSourceBundle, PlaybackMode, PlaybackSettings},
+    log::info,
+    prelude::{
+        Commands, Component, Entity, Event, EventReader, Handle, Query, Res, Resource, With,
+    },
+};
 
 #[derive(Debug, Resource)]
 pub struct SoundResource {
