@@ -17,6 +17,7 @@ impl Plugin for SoundPlugin {
             (
                 play_sfx.run_if(on_event::<PlaySFX>()),
                 play_music.run_if(on_event::<PlayMusic>()),
+                stop_music.run_if(on_event::<StopMusic>()),
             ),
         );
     }
@@ -78,6 +79,9 @@ pub struct PlayMusic {
     name: String,
 }
 
+#[derive(Event)]
+pub struct StopMusic {}
+
 #[derive(Component)]
 pub struct NowPlaying {}
 
@@ -123,5 +127,11 @@ pub fn play_music(
                 })
                 .insert(NowPlaying {});
         }
+    }
+}
+
+pub fn stop_music(mut commands: Commands, playing_query: Query<Entity, With<NowPlaying>>) {
+    if !playing_query.is_empty() {
+        commands.entity(playing_query.single()).despawn();
     }
 }
