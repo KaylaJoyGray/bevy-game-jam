@@ -27,7 +27,7 @@ impl SpriteSheetResource {
     // pub fn insert(&mut self, name: String, sprite: SpriteSheetHandle) {
     //     self.sheets.insert(name, sprite);
     // }
-    // 
+    //
     // pub fn get(&self, name: &str) -> Option<&SpriteSheetHandle> {
     //     self.sheets.get(name)
     // }
@@ -173,14 +173,14 @@ pub fn snap_camera_to_focus(
     mut query_camera: Query<(&mut OrthographicProjection, &mut Transform), With<MainCamera>>,
     query_focus: Query<&GlobalTransform, With<HasCameraFocus>>,
 ) {
-    let focus_z = query_focus.single().translation().z;
+    // let focus_z = query_focus.single().translation().z;
 
-    let min = (focus_z - 20.).floor(); // view is 10 blocks, 2 units each
-    let max = focus_z.ceil();
+    // let min = (focus_z - 20.).floor(); // view is 10 blocks, 2 units each
+    // let max = focus_z.ceil();
 
     for (mut projection, mut transform) in query_camera.iter_mut() {
-        projection.near = min;
-        projection.far = max;
+        // projection.near = min;
+        // projection.far = max;
         transform.translation = query_focus.single().translation();
     }
 }
