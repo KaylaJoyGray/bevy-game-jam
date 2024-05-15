@@ -24,7 +24,7 @@ impl SoundResource {
 /// to the asset server
 ///
 pub fn load_sounds(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let config = parse::<Vec<(String)>>("./assets/sounds/config.ron")
+    let config = parse::<Vec<String>>("./assets/sounds/config.ron")
         .expect("Fatal: could not parse sounds/config.ron");
 
     let mut sound_resource = SoundResource::new();
