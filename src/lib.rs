@@ -6,5 +6,11 @@ mod sound;
 
 #[wasm_bindgen(start)]
 pub fn start() {
-    App::new().add_plugins(DefaultPlugins).run()
+    App::new()
+        .add_plugins((
+            DefaultPlugins,
+            gfx::GFXPlugin { snap_camera: false },
+            sound::SoundPlugin {},
+        ))
+        .run()
 }
