@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::ron_helpers::{parse, trim_extension};
 use bevy::{
     asset::AssetServer,
@@ -10,6 +8,7 @@ use bevy::{
         With,
     },
 };
+use std::collections::HashMap;
 
 #[derive(Debug, Resource)]
 pub struct SoundResource {
