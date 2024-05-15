@@ -2,6 +2,27 @@ use crate::ron_helpers::{parse, trim_extension};
 use bevy::{prelude::*, render::camera::ScalingMode::WindowSize, window::PrimaryWindow};
 use std::collections::HashMap;
 
+pub struct GFXPlugin {
+    snap_camera: bool, // snaps camera to the entity with HasCameraFocus (must be a single entity)
+}
+
+impl Default for GFXPlugin {
+    fn default() -> Self {
+        GFXPlugin { snap_camera: false }
+    }
+}
+
+impl Plugin for GFXPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, (load_sprite_sheets, spawn_camera))
+            .add_systems(Update, add_sprite_from_sprite_meta);
+
+        if self.snap_camera {
+            app.add_systems(Update, snap_camera_to_focus);
+        }
+    }
+}
+
 /// Important: this is the sprite size before window scaling is applied
 pub const SPRITE_SIZE: f32 = 2.0;
 
@@ -50,9 +71,8 @@ pub fn load_sprite_sheets(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let config =
-        parse::<Vec<(String, f32, i32, i32)>>("./assets/graphics/config.ron")
-            .expect("Fatal: could not parse graphics/config.ron");
+    let config = parse::<Vec<(String, f32, i32, i32)>>("./assets/graphics/config.ron")
+        .expect("Fatal: could not parse graphics/config.ron");
 
     let mut sprite_sheet_resource = SpriteSheetResource::new();
 
@@ -70,7 +90,9 @@ pub fn load_sprite_sheets(
             layout: texture_atlas_layouts.add(layout),
         };
 
-        sprite_sheet_resource.map.insert(trim_extension(&data.0), sprite_sheet_handle);
+        sprite_sheet_resource
+            .map
+            .insert(trim_extension(&data.0), sprite_sheet_handle);
 
         info!(
             "Loaded sprite sheet: {}, size: {}px, {} row(s), {} column(s)",
@@ -127,7 +149,6 @@ pub fn add_sprite_from_sprite_meta(
                     ..default()
                 })
                 .insert(SpriteAdded {});
-
         } else {
             warn!("Warning: no sprite sheet named {} found", sprite.sheet_name);
         }
