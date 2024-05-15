@@ -24,7 +24,7 @@ impl Plugin for SoundPlugin {
 
 #[derive(Debug, Resource)]
 pub struct SoundResource {
-    pub map: HashMap<String, Handle<AudioSource>>,
+    map: HashMap<String, Handle<AudioSource>>,
 }
 
 impl SoundResource {
@@ -32,6 +32,16 @@ impl SoundResource {
         SoundResource {
             map: HashMap::new(),
         }
+    }
+
+    /// Insert a new Handle<AudioSource>
+    pub fn insert(&mut self, name: String, handle: Handle<AudioSource>) {
+        self.map.insert(name, handle.clone());
+    }
+
+    /// Get a Handle<AudioSource>
+    pub fn get(&self, name: &str) -> Option<Handle<AudioSource>> {
+        self.map.get(name).cloned()
     }
 }
 
@@ -48,9 +58,9 @@ pub fn load_sounds(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut sound_resource = SoundResource::new();
 
     config.iter().for_each(|data| {
-        let handle = asset_server.load(data);
+        let handle: Handle<AudioSource> = asset_server.load(data);
 
-        sound_resource.map.insert(trim_extension(&data), handle);
+        sound_resource.insert(trim_extension(&data), handle);
 
         info!("Loaded sound file: {}", data);
     });

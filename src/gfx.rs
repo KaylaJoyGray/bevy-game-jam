@@ -34,7 +34,7 @@ pub struct SpriteSheetHandle {
 
 #[derive(Debug, Resource)]
 pub struct SpriteSheetResource {
-    pub map: HashMap<String, SpriteSheetHandle>,
+    map: HashMap<String, SpriteSheetHandle>,
 }
 
 impl SpriteSheetResource {
@@ -42,6 +42,16 @@ impl SpriteSheetResource {
         Self {
             map: HashMap::new(),
         }
+    }
+
+    /// Insert a new SpriteSheetHandle
+    pub fn insert(&mut self, name: String, handle: SpriteSheetHandle) {
+        self.map.insert(name, handle.clone());
+    }
+
+    /// Get a SpriteSheetHandle
+    pub fn get(&self, name: &str) -> Option<SpriteSheetHandle> {
+        self.map.get(name).cloned()
     }
 }
 
@@ -91,7 +101,6 @@ pub fn load_sprite_sheets(
         };
 
         sprite_sheet_resource
-            .map
             .insert(trim_extension(&data.0), sprite_sheet_handle);
 
         info!(
@@ -127,7 +136,7 @@ pub fn add_sprite_from_sprite_meta(
     window: Query<&Window, With<PrimaryWindow>>,
 ) {
     for (entity, sprite) in query.iter() {
-        let handle = sprite_sheet_resource.map.get(sprite.sheet_name.as_str());
+        let handle = sprite_sheet_resource.get(sprite.sheet_name.as_str());
 
         if let Some(handle) = handle {
             commands
