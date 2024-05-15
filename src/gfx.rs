@@ -3,7 +3,7 @@ use bevy::{prelude::*, render::camera::ScalingMode::WindowSize, window::PrimaryW
 use std::collections::HashMap;
 
 pub struct GFXPlugin {
-    snap_camera: bool, // snaps camera to the entity with HasCameraFocus (must be a single entity)
+    pub snap_camera: bool, // snaps camera to the entity with HasCameraFocus (must be a single entity)
 }
 
 impl Default for GFXPlugin {
