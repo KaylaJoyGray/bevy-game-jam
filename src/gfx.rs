@@ -4,7 +4,6 @@ use std::collections::HashMap;
 
 /// Important: this is the sprite size before window scaling is applied
 pub const SPRITE_SIZE: f32 = 2.0;
-const LAYER_HEIGHT: f32 = SPRITE_SIZE;
 
 #[derive(Debug, Clone)]
 pub struct SpriteSheetHandle {
@@ -23,14 +22,6 @@ impl SpriteSheetResource {
             map: HashMap::new(),
         }
     }
-
-    // pub fn insert(&mut self, name: String, sprite: SpriteSheetHandle) {
-    //     self.sheets.insert(name, sprite);
-    // }
-    //
-    // pub fn get(&self, name: &str) -> Option<&SpriteSheetHandle> {
-    //     self.sheets.get(name)
-    // }
 }
 
 #[derive(Debug, Clone, Component)]
@@ -137,7 +128,6 @@ pub fn add_sprite_from_sprite_meta(
                 })
                 .insert(SpriteAdded {});
 
-            //commands.entity(entity).push_children(&[sprite]);
         } else {
             warn!("Warning: no sprite sheet named {} found", sprite.sheet_name);
         }
@@ -170,17 +160,10 @@ pub fn spawn_camera(mut commands: Commands) {
 }
 
 pub fn snap_camera_to_focus(
-    mut query_camera: Query<(&mut OrthographicProjection, &mut Transform), With<MainCamera>>,
+    mut query_camera: Query<(&mut Transform), With<MainCamera>>,
     query_focus: Query<&GlobalTransform, With<HasCameraFocus>>,
 ) {
-    // let focus_z = query_focus.single().translation().z;
-
-    // let min = (focus_z - 20.).floor(); // view is 10 blocks, 2 units each
-    // let max = focus_z.ceil();
-
-    for (mut projection, mut transform) in query_camera.iter_mut() {
-        // projection.near = min;
-        // projection.far = max;
+    for (mut transform) in query_camera.iter_mut() {
         transform.translation = query_focus.single().translation();
     }
 }
