@@ -181,10 +181,10 @@ pub fn spawn_camera(mut commands: Commands) {
 }
 
 pub fn snap_camera_to_focus(
-    mut query_camera: Query<(&mut Transform), With<MainCamera>>,
+    mut query_camera: Query<&mut Transform, With<MainCamera>>,
     query_focus: Query<&GlobalTransform, With<HasCameraFocus>>,
 ) {
-    for (mut transform) in query_camera.iter_mut() {
+    for mut transform in query_camera.iter_mut() {
         transform.translation = query_focus.single().translation();
     }
 }
