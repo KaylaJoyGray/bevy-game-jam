@@ -52,7 +52,7 @@ pub struct PlayMusic {
 }
 
 #[derive(Component)]
-struct NowPlaying {}
+pub struct NowPlaying {}
 
 pub fn play_sfx(
     mut commands: Commands,
