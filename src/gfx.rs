@@ -14,23 +14,23 @@ pub struct SpriteSheetHandle {
 
 #[derive(Debug, Resource)]
 pub struct SpriteSheetResource {
-    sheets: HashMap<String, SpriteSheetHandle>,
+    pub map: HashMap<String, SpriteSheetHandle>,
 }
 
 impl SpriteSheetResource {
     pub fn new() -> Self {
         Self {
-            sheets: HashMap::new(),
+            map: HashMap::new(),
         }
     }
 
-    pub fn insert(&mut self, name: String, sprite: SpriteSheetHandle) {
-        self.sheets.insert(name, sprite);
-    }
-
-    pub fn get(&self, name: &str) -> Option<&SpriteSheetHandle> {
-        self.sheets.get(name)
-    }
+    // pub fn insert(&mut self, name: String, sprite: SpriteSheetHandle) {
+    //     self.sheets.insert(name, sprite);
+    // }
+    // 
+    // pub fn get(&self, name: &str) -> Option<&SpriteSheetHandle> {
+    //     self.sheets.get(name)
+    // }
 }
 
 #[derive(Debug, Clone, Component)]
@@ -79,7 +79,7 @@ pub fn load_sprite_sheets(
             layout: texture_atlas_layouts.add(layout),
         };
 
-        sprite_sheet_resource.insert(trim_extension(&data.0), sprite_sheet_handle);
+        sprite_sheet_resource.map.insert(trim_extension(&data.0), sprite_sheet_handle);
 
         info!(
             "Loaded sprite sheet: {}, size: {}px, {} row(s), {} column(s)",
@@ -114,7 +114,7 @@ pub fn add_sprite_from_sprite_meta(
     window: Query<&Window, With<PrimaryWindow>>,
 ) {
     for (entity, sprite) in query.iter() {
-        let handle = sprite_sheet_resource.get(sprite.sheet_name.as_str());
+        let handle = sprite_sheet_resource.map.get(sprite.sheet_name.as_str());
 
         if let Some(handle) = handle {
             commands
