@@ -128,6 +128,7 @@ pub fn load_sprite_sheets(
         });
 
     commands.insert_resource(sprite_sheet_resource);
+    commands.insert_resource(animation_resource);
 }
 
 #[derive(Debug, Clone, PartialEq, Component)]
