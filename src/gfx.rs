@@ -22,6 +22,7 @@ impl Plugin for GFXPlugin {
                 (
                     update_animations,
                     add_sprite_from_sprite_meta.after(update_animations),
+                    update_sprite_scaling.after(add_sprite_from_sprite_meta),
                 ),
             );
 
@@ -198,6 +199,22 @@ pub fn add_sprite_from_sprite_meta(
 }
 
 ///
+/// update_sprite_scaling: Bevy system
+///
+/// Updates sprite scaling for each Sprite if the window changes
+pub fn update_sprite_scaling(
+    mut sprites_query: Query<&mut Sprite, With<SpriteAdded>>,
+    window: Query<&Window, (With<PrimaryWindow>, Changed<Window>)>,
+) {
+    sprites_query.iter_mut().for_each(|mut sprite| {
+        sprite.custom_size = Some(Vec2::new(
+            SPRITE_SIZE * window.single().scale_factor(),
+            SPRITE_SIZE * window.single().scale_factor(),
+        ));
+    });
+}
+
+///
 /// AnimationType
 ///
 /// * Once: plays once and stops on the last frame
@@ -261,7 +278,7 @@ impl Animation {
         }
         self.frames[self.index].clone()
     }
-    
+
     pub fn sheet_name(&self) -> &str {
         self.sheet_name.as_str()
     }
@@ -309,7 +326,7 @@ pub fn update_animations(
             commands.entity(entity).remove::<SpriteAdded>();
             sprite_meta.index = next_index;
         }
-        
+
         if animation.sheet_name().ne(&sprite_meta.sheet_name) {
             sprite_meta.sheet_name = animation.sheet_name().to_string();
         }
