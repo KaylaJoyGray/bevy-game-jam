@@ -55,21 +55,6 @@ impl SpriteSheetResource {
     }
 }
 
-#[derive(Debug, Clone, Component)]
-pub struct SpriteMeta {
-    pub index: usize,
-    pub sheet_name: String,
-}
-
-impl Default for SpriteMeta {
-    fn default() -> Self {
-        SpriteMeta {
-            index: 0,
-            sheet_name: "default".to_string(),
-        }
-    }
-}
-
 ///
 /// load_sprite_sheets: Bevy system
 ///
@@ -110,6 +95,21 @@ pub fn load_sprite_sheets(
     });
 
     commands.insert_resource(sprite_sheet_resource);
+}
+
+#[derive(Debug, Clone, Component)]
+pub struct SpriteMeta {
+    pub index: usize,
+    pub sheet_name: String,
+}
+
+impl Default for SpriteMeta {
+    fn default() -> Self {
+        SpriteMeta {
+            index: 0,
+            sheet_name: "default".to_string(),
+        }
+    }
 }
 
 #[derive(Debug, Component)]
