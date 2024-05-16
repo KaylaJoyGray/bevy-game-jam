@@ -1,4 +1,4 @@
 [
     //filename, tile size, rows, columns
-    //("default.png", 16.0, 1, 1),
+    //("default.png", 16.0, 1, 1, [("walking", 0, 3),]),
 ]
