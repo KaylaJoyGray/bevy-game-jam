@@ -184,16 +184,18 @@ pub enum AnimationType {
 #[derive(Debug, Component)]
 pub struct Animation {
     index: usize,
-    frames: Vec<SpriteMeta>,
+    sheet_name: String,
+    frames: Vec<usize>,
     timer: Timer,
     animation_type: AnimationType,
     finished: bool,
 }
 
 impl Animation {
-    pub fn new(frames: Vec<SpriteMeta>, frame_time: f32, animation_type: AnimationType) -> Self {
+    pub fn new(sheet_name: String, frames: Vec<usize>, frame_time: f32, animation_type: AnimationType) -> Self {
         Animation {
             index: 0,
+            sheet_name,
             frames,
             timer: Timer::from_seconds(frame_time, TimerMode::Once),
             animation_type,
@@ -217,7 +219,8 @@ impl Animation {
         }
     }
 
-    pub fn tick(&mut self, delta: f32) -> SpriteMeta {
+    /// Advances the timer and returns the index of the current frame
+    pub fn tick(&mut self, delta: f32) -> usize {
         self.timer.tick(Duration::from_secs_f32(delta));
         if self.timer.finished() {
             self.advance_frame();
@@ -237,13 +240,13 @@ impl Animation {
 pub fn update_animations(
     mut commands: Commands,
     time: Res<Time<Virtual>>,
-    mut query: Query<(Entity, &SpriteMeta, &mut Animation), With<SpriteAdded>>,
+    mut query: Query<(Entity, &mut SpriteMeta, &mut Animation), With<SpriteAdded>>,
 ) {
-    for (entity, sprite_meta, mut animation) in query.iter_mut() {
-        let next_sprite = animation.tick(time.delta_seconds());
-        if next_sprite.ne(sprite_meta) {
+    for (entity, mut sprite_meta, mut animation) in query.iter_mut() {
+        let next_index = animation.tick(time.delta_seconds());
+        if next_index.ne(&sprite_meta.index) {
             commands.entity(entity).remove::<SpriteAdded>();
-            commands.entity(entity).insert(next_sprite);
+            sprite_meta.index = next_index;
         }
 
         if animation.finished() {
