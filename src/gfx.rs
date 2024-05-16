@@ -170,6 +170,12 @@ pub fn add_sprite_from_sprite_meta(
     }
 }
 
+///
+/// AnimationType
+///
+/// * Once: plays once and stops on the last frame
+/// * Repeat: loops indefinitely
+/// * Despawn: despawns the entity on completion
 #[derive(Debug, Clone, PartialEq)]
 pub enum AnimationType {
     Once,
