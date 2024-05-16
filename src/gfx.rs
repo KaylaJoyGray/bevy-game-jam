@@ -1,6 +1,7 @@
 use crate::ron_helpers::{parse, trim_extension};
 use bevy::{prelude::*, render::camera::ScalingMode::WindowSize, window::PrimaryWindow};
 use std::collections::HashMap;
+use std::time::Duration;
 
 pub struct GFXPlugin {
     pub snap_camera: bool, // snaps camera to the entity with HasCameraFocus (must be a single entity)
@@ -15,7 +16,13 @@ impl Default for GFXPlugin {
 impl Plugin for GFXPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, (load_sprite_sheets, spawn_camera))
-            .add_systems(Update, add_sprite_from_sprite_meta);
+            .add_systems(
+                Update,
+                (
+                    update_animations,
+                    add_sprite_from_sprite_meta.after(update_animations),
+                ),
+            );
 
         if self.snap_camera {
             app.add_systems(Update, snap_camera_to_focus);
@@ -85,8 +92,7 @@ pub fn load_sprite_sheets(
             layout: texture_atlas_layouts.add(layout),
         };
 
-        sprite_sheet_resource
-            .insert(trim_extension(&data.0), sprite_sheet_handle);
+        sprite_sheet_resource.insert(trim_extension(&data.0), sprite_sheet_handle);
 
         info!(
             "Loaded sprite sheet: {}, size: {}px, {} row(s), {} column(s)",
@@ -97,7 +103,7 @@ pub fn load_sprite_sheets(
     commands.insert_resource(sprite_sheet_resource);
 }
 
-#[derive(Debug, Clone, Component)]
+#[derive(Debug, Clone, PartialEq, Component)]
 pub struct SpriteMeta {
     pub index: usize,
     pub sheet_name: String,
@@ -160,6 +166,92 @@ pub fn add_sprite_from_sprite_meta(
                 .insert(SpriteAdded {});
         } else {
             warn!("Warning: no sprite sheet named {} found", sprite.sheet_name);
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum AnimationType {
+    Once,
+    Repeat,
+    Despawn,
+}
+
+#[derive(Debug, Component)]
+pub struct Animation {
+    index: usize,
+    frames: Vec<SpriteMeta>,
+    timer: Timer,
+    animation_type: AnimationType,
+    finished: bool,
+}
+
+impl Animation {
+    pub fn new(frames: Vec<SpriteMeta>, frame_time: f32, animation_type: AnimationType) -> Self {
+        Animation {
+            index: 0,
+            frames,
+            timer: Timer::from_seconds(frame_time, TimerMode::Once),
+            animation_type,
+            finished: false,
+        }
+    }
+
+    fn advance_frame(&mut self) {
+        if self.animation_type.eq(&AnimationType::Repeat) {
+            self.index = (self.index + 1) % self.frames.len();
+            self.timer.reset();
+            return;
+        }
+
+        // non-repeating animation
+        if self.index < self.frames.len() - 1 {
+            self.index += 1;
+            self.timer.reset();
+        } else {
+            self.finished = true;
+        }
+    }
+
+    pub fn tick(&mut self, delta: f32) -> SpriteMeta {
+        self.timer.tick(Duration::from_secs_f32(delta));
+        if self.timer.finished() {
+            self.advance_frame();
+        }
+        self.frames[self.index].clone()
+    }
+
+    pub fn get_type(&self) -> AnimationType {
+        self.animation_type.clone()
+    }
+
+    pub fn finished(&self) -> bool {
+        self.finished
+    }
+}
+
+pub fn update_animations(
+    mut commands: Commands,
+    time: Res<Time<Virtual>>,
+    mut query: Query<(Entity, &SpriteMeta, &mut Animation), With<SpriteAdded>>,
+) {
+    for (entity, sprite_meta, mut animation) in query.iter_mut() {
+        let next_sprite = animation.tick(time.delta_seconds());
+        if next_sprite.ne(sprite_meta) {
+            commands.entity(entity).remove::<SpriteAdded>();
+            commands.entity(entity).insert(next_sprite);
+        }
+
+        if animation.finished() {
+            match animation.get_type() {
+                AnimationType::Once => {
+                    commands.entity(entity).remove::<Animation>();
+                }
+                AnimationType::Despawn => {
+                    commands.entity(entity).despawn();
+                }
+                _ => {}
+            }
         }
     }
 }
