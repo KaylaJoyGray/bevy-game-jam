@@ -1,5 +1,6 @@
 use crate::ron_helpers::{parse, trim_extension};
 use bevy::{prelude::*, render::camera::ScalingMode::WindowSize, window::PrimaryWindow};
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::time::Duration;
 
@@ -72,32 +73,57 @@ pub fn load_sprite_sheets(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let config = parse::<Vec<(String, f32, i32, i32)>>("./assets/graphics/config.ron")
-        .expect("Fatal: could not parse graphics/config.ron");
+    let config = parse::<
+        Vec<(
+            String,
+            f32,
+            usize,
+            usize,
+            Vec<(String, usize, usize, f32, AnimationType)>,
+        )>,
+    >("./assets/graphics/config.ron")
+    .expect("Fatal: could not parse graphics/config.ron");
 
     let mut sprite_sheet_resource = SpriteSheetResource::new();
+    let mut animation_resource = AnimationResource::new();
 
-    config.iter().for_each(|data| {
-        let layout = TextureAtlasLayout::from_grid(
-            Vec2::new(data.1, data.1),
-            data.2 as usize,
-            data.3 as usize,
-            None,
-            None,
-        );
+    config
+        .iter()
+        .for_each(|(name, tile_size, rows, columns, animations)| {
+            // load sprite sheets
+            let layout = TextureAtlasLayout::from_grid(
+                Vec2::new(*tile_size, *tile_size),
+                *columns,
+                *rows,
+                None,
+                None,
+            );
 
-        let sprite_sheet_handle = SpriteSheetHandle {
-            texture: asset_server.load(&format!("graphics/{}", data.0)),
-            layout: texture_atlas_layouts.add(layout),
-        };
+            let sprite_sheet_handle = SpriteSheetHandle {
+                texture: asset_server.load(&format!("graphics/{}", *name)),
+                layout: texture_atlas_layouts.add(layout),
+            };
 
-        sprite_sheet_resource.insert(trim_extension(&data.0), sprite_sheet_handle);
+            sprite_sheet_resource.insert(trim_extension(name), sprite_sheet_handle);
 
-        info!(
-            "Loaded sprite sheet: {}, size: {}px, {} row(s), {} column(s)",
-            data.0, data.1, data.3, data.2
-        );
-    });
+            info!(
+                "Loaded sprite sheet: {}, tile size: {}px, {} row(s), {} column(s)",
+                name, tile_size, rows, columns
+            );
+
+            // load animations
+            animations
+                .iter()
+                .for_each(|(name, start, end, frame_time, animation_type)| {
+                    let animation = Animation::new(
+                        name.clone(),
+                        (*start..=*end).collect(),
+                        *frame_time,
+                        animation_type.clone(),
+                    );
+                    animation_resource.insert(name.clone(), animation);
+                });
+        });
 
     commands.insert_resource(sprite_sheet_resource);
 }
@@ -174,14 +200,14 @@ pub fn add_sprite_from_sprite_meta(
 /// * Once: plays once and stops on the last frame
 /// * Repeat: loops indefinitely
 /// * Despawn: despawns the entity on completion
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 pub enum AnimationType {
     Once,
     Repeat,
     Despawn,
 }
 
-#[derive(Debug, Component)]
+#[derive(Debug, Clone, Component)]
 pub struct Animation {
     index: usize,
     sheet_name: String,
@@ -192,7 +218,12 @@ pub struct Animation {
 }
 
 impl Animation {
-    pub fn new(sheet_name: String, frames: Vec<usize>, frame_time: f32, animation_type: AnimationType) -> Self {
+    pub fn new(
+        sheet_name: String,
+        frames: Vec<usize>,
+        frame_time: f32,
+        animation_type: AnimationType,
+    ) -> Self {
         Animation {
             index: 0,
             sheet_name,
@@ -234,6 +265,29 @@ impl Animation {
 
     pub fn finished(&self) -> bool {
         self.finished
+    }
+}
+
+#[derive(Debug, Resource)]
+pub struct AnimationResource {
+    map: HashMap<String, Animation>,
+}
+
+impl AnimationResource {
+    pub fn new() -> Self {
+        Self {
+            map: HashMap::new(),
+        }
+    }
+
+    /// Insert a new Animation
+    pub fn insert(&mut self, name: String, animation: Animation) {
+        self.map.insert(name, animation.clone());
+    }
+
+    /// Get an Animation
+    pub fn get(&self, name: &str) -> Option<Animation> {
+        self.map.get(name).cloned()
     }
 }
 
