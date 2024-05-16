@@ -4,7 +4,7 @@ mod gfx;
 mod ron_helpers;
 mod sound;
 
-// TODO OTD: Add system to update sprite scaling if the window changes. Start building example game
+// TODO OTD: Start building example game
 
 #[wasm_bindgen(start)]
 pub fn start() {
