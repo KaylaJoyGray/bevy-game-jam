@@ -261,6 +261,10 @@ impl Animation {
         }
         self.frames[self.index].clone()
     }
+    
+    pub fn sheet_name(&self) -> &str {
+        self.sheet_name.as_str()
+    }
 
     pub fn get_type(&self) -> AnimationType {
         self.animation_type.clone()
@@ -304,6 +308,10 @@ pub fn update_animations(
         if next_index.ne(&sprite_meta.index) {
             commands.entity(entity).remove::<SpriteAdded>();
             sprite_meta.index = next_index;
+        }
+        
+        if animation.sheet_name().ne(&sprite_meta.sheet_name) {
+            sprite_meta.sheet_name = animation.sheet_name().to_string();
         }
 
         if animation.finished() {
