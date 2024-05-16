@@ -12,14 +12,18 @@ pub struct SoundPlugin {}
 
 impl Plugin for SoundPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, load_sounds).add_systems(
-            Update,
-            (
-                play_sfx.run_if(on_event::<PlaySFX>()),
-                play_music.run_if(on_event::<PlayMusic>()),
-                stop_music.run_if(on_event::<StopMusic>()),
-            ),
-        );
+        app.add_event::<PlaySFX>()
+            .add_event::<PlayMusic>()
+            .add_event::<StopMusic>()
+            .add_systems(Startup, load_sounds)
+            .add_systems(
+                Update,
+                (
+                    play_sfx.run_if(on_event::<PlaySFX>()),
+                    play_music.run_if(on_event::<PlayMusic>()),
+                    stop_music.run_if(on_event::<StopMusic>()),
+                ),
+            );
     }
 }
 
