@@ -122,6 +122,8 @@ pub fn load_sprite_sheets(
                         animation_type.clone(),
                     );
                     animation_resource.insert(name.clone(), animation);
+
+                    info!("Loaded animation: {}", name);
                 });
         });
 
