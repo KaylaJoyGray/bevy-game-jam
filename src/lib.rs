@@ -4,7 +4,7 @@ mod gfx;
 mod ron_helpers;
 mod sound;
 
-// TODO OTD: Sprite animations
+// TODO OTD: Build example game
 
 #[wasm_bindgen(start)]
 pub fn start() {
