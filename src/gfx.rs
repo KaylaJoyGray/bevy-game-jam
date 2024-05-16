@@ -89,7 +89,7 @@ pub fn load_sprite_sheets(
 
     config
         .iter()
-        .for_each(|(name, tile_size, rows, columns, animations)| {
+        .for_each(|(sheet_name, tile_size, rows, columns, animations)| {
             // load sprite sheets
             let layout = TextureAtlasLayout::from_grid(
                 Vec2::new(*tile_size, *tile_size),
@@ -100,30 +100,30 @@ pub fn load_sprite_sheets(
             );
 
             let sprite_sheet_handle = SpriteSheetHandle {
-                texture: asset_server.load(&format!("graphics/{}", *name)),
+                texture: asset_server.load(&format!("graphics/{}", *sheet_name)),
                 layout: texture_atlas_layouts.add(layout),
             };
 
-            sprite_sheet_resource.insert(trim_extension(name), sprite_sheet_handle);
+            sprite_sheet_resource.insert(trim_extension(sheet_name), sprite_sheet_handle);
 
             info!(
                 "Loaded sprite sheet: {}, tile size: {}px, {} row(s), {} column(s)",
-                name, tile_size, rows, columns
+                sheet_name, tile_size, rows, columns
             );
 
             // load animations
             animations
                 .iter()
-                .for_each(|(name, start, end, frame_time, animation_type)| {
+                .for_each(|(anim_name, start, end, frame_time, animation_type)| {
                     let animation = Animation::new(
-                        name.clone(),
+                        sheet_name.clone(),
                         (*start..=*end).collect(),
                         *frame_time,
                         animation_type.clone(),
                     );
-                    animation_resource.insert(name.clone(), animation);
+                    animation_resource.insert(anim_name.clone(), animation);
 
-                    info!("Loaded animation: {}", name);
+                    info!("Loaded animation: {}", anim_name);
                 });
         });
 
