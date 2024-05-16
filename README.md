@@ -17,8 +17,7 @@ The size of the sprite in *virtual pixels* can be set by changing the `SPRITE_SI
 
 ### Animations:
 
-Attach an `Animation` component to add an animation:  
-`Animation::new(sheet_name: String, frames: Vec<usize>, frame_time: f32, animation_type: AnimationType)`
+Animations are defined in the same config file as sprite sheets and made available through `AnimationResource`
 
 ### Events:
 `PlaySFX` plays a sound once and then despawns  
