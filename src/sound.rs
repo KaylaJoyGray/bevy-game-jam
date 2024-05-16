@@ -104,7 +104,7 @@ pub fn play_sfx(
                 },
             });
         } else {
-            info!("Sound not found: {}", event.name);
+            warn!("Sound not found: {}", event.name);
         }
     }
 }
