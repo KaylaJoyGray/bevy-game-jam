@@ -67,7 +67,6 @@ impl SpriteSheetResource {
 ///
 /// This system scans the graphics folder for sprite sheets and loads the resources
 /// to the asset server
-///
 pub fn load_sprite_sheets(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -127,7 +126,6 @@ pub struct SpriteAdded {}
 /// This system finds SpriteMeta components that do not have a sprite sheet bundle added yet,
 /// and adds the bundle. The SpriteMeta component contains only an identifier and an index, so
 /// this system needs to run for anything to be displayed on the screen
-///
 pub fn add_sprite_from_sprite_meta(
     mut commands: Commands,
     query: Query<
