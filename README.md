@@ -5,7 +5,7 @@ Targets WASM.
 
 To add graphics or sounds, drop the files in the correct folder and edit the `config.ron`
 
-The handles are then available through SpriteSheetResource and SoundResource, and can be looked up by filename (without the extension).
+The handles are then made available through SpriteSheetResource and SoundResource at program start, and can be looked up by filename (without the extension).
 
 ### Sprites:
 Add a `SpriteMeta` component and the components needed to display a sprite will be added automatically.
